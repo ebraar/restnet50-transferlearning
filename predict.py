@@ -1,30 +1,39 @@
 import numpy as np
 import tensorflow as tf
 from PIL import Image
-import os
+from tensorflow.keras import layers, models
+from tensorflow.keras.applications import ResNet50
 from tensorflow.keras.applications.resnet50 import preprocess_input
 
 IMG_SIZE = (224, 224)
+WEIGHTS_PATH = "models/resnet50_flower.weights.h5"
 
-MODEL_PATH_KERAS = "models/resnet50_flower_model.keras"
-MODEL_PATH_H5 = "models/resnet50_flower_model.h5"
-
-# Modeli yükle
-if os.path.exists(MODEL_PATH_KERAS):
-    model = tf.keras.models.load_model(
-        MODEL_PATH_KERAS,
-        custom_objects={"preprocess_input": preprocess_input}
-    )
-elif os.path.exists(MODEL_PATH_H5):
-    model = tf.keras.models.load_model(
-        MODEL_PATH_H5,
-        custom_objects={"preprocess_input": preprocess_input}
-    )
-else:
-    raise FileNotFoundError("Model dosyası bulunamadı.")
-
-# Eğitimde çıkan sınıf isimleriyle aynı olmalı
 CLASS_NAMES = ["daisy", "dandelion", "roses", "sunflowers", "tulips"]
+
+
+def build_model():
+    base_model = ResNet50(
+        weights="imagenet",
+        include_top=False,
+        input_shape=(224, 224, 3)
+    )
+
+    base_model.trainable = False
+
+    model = models.Sequential([
+        layers.Lambda(preprocess_input),
+        base_model,
+        layers.GlobalAveragePooling2D(),
+        layers.Dense(128, activation="relu"),
+        layers.Dropout(0.3),
+        layers.Dense(len(CLASS_NAMES), activation="softmax")
+    ])
+
+    return model
+
+
+model = build_model()
+model.load_weights(WEIGHTS_PATH)
 
 
 def predict_image(img_path):

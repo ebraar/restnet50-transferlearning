@@ -2,15 +2,15 @@ from flask import Flask, jsonify, request
 import os
 import gdown
 
-MODEL_PATH = "models/resnet50_flower_model.h5"
+WEIGHTS_PATH = "models/resnet50_flower.weights.h5"
 
 os.makedirs("models", exist_ok=True)
 os.makedirs("uploads", exist_ok=True)
 
-if not os.path.exists(MODEL_PATH):
-    print("Model indiriliyor...")
-    url = "https://drive.google.com/uc?id=1Vj3RgQCpMO_67hiENBFLHVqZgFtGhLhS"
-    gdown.download(url, MODEL_PATH, quiet=False)
+if not os.path.exists(WEIGHTS_PATH):
+    print("Weights indiriliyor...")
+    url = "https://drive.google.com/uc?id=1jPqZdYcCd0t2m21FSaozQD5GkM1KfBaV"
+    gdown.download(url, WEIGHTS_PATH, quiet=False)
 
 from predict import predict_image
 
@@ -38,7 +38,6 @@ def classify():
     file.save(filepath)
 
     result = predict_image(filepath)
-
     return jsonify(result)
 
 
