@@ -5,7 +5,7 @@ import gdown
 MODEL_PATH = "models/resnet50_flower_model.h5"
 
 os.makedirs("models", exist_ok=True)
-os.makedirs("uploads", exist_ok=True")
+os.makedirs("uploads", exist_ok=True)
 
 if not os.path.exists(MODEL_PATH):
     print("Model indiriliyor...")
