@@ -12,6 +12,12 @@ CLASS_NAMES = ["daisy", "dandelion", "roses", "sunflowers", "tulips"]
 
 
 def build_model():
+    data_augmentation = tf.keras.Sequential([
+        layers.RandomFlip("horizontal"),
+        layers.RandomRotation(0.1),
+        layers.RandomZoom(0.1),
+    ])
+
     base_model = ResNet50(
         weights="imagenet",
         include_top=False,
@@ -21,6 +27,8 @@ def build_model():
     base_model.trainable = False
 
     model = models.Sequential([
+        layers.Input(shape=(224, 224, 3)),
+        data_augmentation,
         layers.Lambda(preprocess_input),
         base_model,
         layers.GlobalAveragePooling2D(),
